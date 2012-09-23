@@ -1,0 +1,27 @@
+<?php
+
+function devudo_hosting_nodeapi(&$node, $op){
+  if ($op == 'load' && $node->type == 'task') {
+  }
+}
+
+function devudo_hosting_hosting_site_context_options(&$task) {
+  drush_log('[DEVUDO] devudo_hosting_hosting_site_context_options() invoked.');
+
+  // From hosting_hosting_platform_context_options().
+  $client = node_load($task->ref->client);
+  $task->context_options['client'] = $client;
+  drush_log('[DEVUDO] Client: ' .$client->title);
+}
+
+function devudo_hosting_post_hosting_verify_task($task, $data){
+  drush_log('[DEVUDO] devudo_hosting_post_hosting_install_task() invoked.');
+
+  // Create the server user!
+  $client_name = $task->context_options['client_name'];
+  drush_log("[DEVUDO] Running 'sudo devudo-create-user $client_name'");
+  drush_shell_exec("sudo devudo-create-user $client_name");
+  drush_log('[DEVUDO] Output: ' . implode("\n", drush_shell_exec_output()));
+
+  drush_log('[DEVUDO] Client user account created: $client_name');
+}
