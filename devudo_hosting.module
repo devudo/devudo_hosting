@@ -23,5 +23,5 @@ function devudo_hosting_post_hosting_verify_task($task, $data){
   drush_shell_exec("sudo devudo-create-user $client_name");
   drush_log('[DEVUDO] Output: ' . implode("\n", drush_shell_exec_output()));
 
-  drush_log('[DEVUDO] Client user account created: $client_name');
+  drush_log("[DEVUDO] Client user account created: $client_name");
 }
