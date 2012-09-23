@@ -14,7 +14,9 @@ function devudo_hosting_hosting_site_context_options(&$task) {
   drush_log('[DEVUDO] Client: ' .$client->title);
 }
 
-function devudo_hosting_post_hosting_verify_task($task, $data){
+function devudo_hosting_post_hosting_install_task($task, $data){
+  // @TODO: Verify installation of devmaster profile
+
   drush_log('[DEVUDO] devudo_hosting_post_hosting_install_task() invoked.');
 
   // Create the server user!
