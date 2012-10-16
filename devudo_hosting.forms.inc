@@ -27,7 +27,7 @@ function devudo_hosting_form_hosting_signup_form_alter(&$form, &$form_state) {
       '#type' => 'password',
     );
 
-    $form['#submit'][] = 'devudo_hosting_signup_password_submit';
+    $form['#submit'][] = 'devudo_hosting_signup_password_validate';
 
     $form['submit']['#value'] = 'Open Sesame';
     $form['submit']['#weight'] = 10;
@@ -57,16 +57,23 @@ function devudo_hosting_form_hosting_signup_form_alter(&$form, &$form_state) {
   $form['#validate'][] = 'devudo_hosting_signup_form_validate';
 }
 
+/**
+ * Form validation for hosting_signup_form
+ */
 function devudo_hosting_signup_form_validate($form, &$form_state) {
   // Set client name
   form_set_value($form['client']['client_name'], trim($form_state['values']['site']['title']), $form_state);
+  
+  // Set domain name
   form_set_value($form['site']['title'], trim($form_state['values']['site']['title']) . '.devudo.com', $form_state);
 }
 
-function devudo_hosting_signup_password_submit($form, &$form_state) {
+/**
+ * Form submission for hosting_signup_form
+ */
+function devudo_hosting_signup_password_validate($form, &$form_state) {
   if (trim($form_state['values']['password']) != SECRET_PASSWORD){
-    drupal_set_message(t('WRONG! Sorry!'), 'error');
-    drupal_set_message('<img src="/sites/all/modules/devudo_hosting/wrong.jpg">', 'error');
+    form_set_error('password', t('WRONG!') . '<br><img src="/sites/all/modules/devudo_hosting/wrong.jpg"><br>' . t('Please try again.'));
   } else {
     $_SESSION['secret_password'] = SECRET_PASSWORD;
   }
