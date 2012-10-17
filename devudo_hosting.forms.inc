@@ -34,6 +34,14 @@ function devudo_hosting_form_hosting_signup_form_alter(&$form, &$form_state) {
     return;
   }
 
+  // Detect already signed up
+  /*
+  if ($_SESSION['signed_up']){
+    drupal_set_message(t('You have already signed up.  Check your email for further instructions.'));
+    drupal_goto('<front>');
+  }
+  */
+
   // Change "title" field
   $form['site']['title']['#title'] = t('Account Name');
   $form['site']['title']['#field_suffix'] = '.devudo.com';
@@ -61,11 +69,20 @@ function devudo_hosting_form_hosting_signup_form_alter(&$form, &$form_state) {
  * Form validation for hosting_signup_form
  */
 function devudo_hosting_signup_form_validate($form, &$form_state) {
+  $client_name = trim($form_state['values']['title']);
+dsm($form_state['values']);
   // Set client name
-  form_set_value($form['client']['client_name'], trim($form_state['values']['site']['title']), $form_state);
+  form_set_value($form['client']['client_name'], $client_name, $form_state);
+  form_set_value($form['client']['uname'], $client_name, $form_state);
   
   // Set domain name
-  form_set_value($form['site']['title'], trim($form_state['values']['site']['title']) . '.devudo.com', $form_state);
+  form_set_value($form['site']['title'], $client_name . '.devudo.com', $form_state);
+  
+  // Redirect to home
+  $form_state['redirect'] = '<front>';
+  
+  // set a session var preventing double signup.
+  $_SESSION['signed_up'] = TRUE;
 }
 
 /**
