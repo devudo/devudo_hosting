@@ -1,14 +1,18 @@
 <?php
 
+include('devudo_hosting.forms.inc');
+
 function devudo_hosting_nodeapi(&$node, $op){
   if ($op == 'load' && $node->type == 'task') {
   }
 }
 
-function devudo_hosting_init(){
-  include('devudo_hosting.forms.inc');
-}
-
+/**
+ * Implements hook_hosting_site_context_options()
+ * 
+ * This passes info about the client to the $task object,
+ * so that hook_post_hosting_install_task() gets it.
+ */
 function devudo_hosting_hosting_site_context_options(&$task) {
   drush_log('[DEVUDO] devudo_hosting_hosting_site_context_options() invoked.');
 
@@ -18,6 +22,9 @@ function devudo_hosting_hosting_site_context_options(&$task) {
   drush_log('[DEVUDO] Client: ' .$client->title);
 }
 
+/**
+ * Implements hook_post_hosting_install_task()
+ */
 function devudo_hosting_post_hosting_install_task($task, $data){
   // @TODO: Verify installation of devmaster profile
 
@@ -26,6 +33,8 @@ function devudo_hosting_post_hosting_install_task($task, $data){
   // Create the server user!
   $client_name = $task->context_options['client_name'];
   drush_log("[DEVUDO] Running 'sudo devudo-create-user $client_name'");
+
+  // Execute our "Create User" script.
   drush_shell_exec("sudo devudo-create-user $client_name");
   drush_log('[DEVUDO] Output: ' . implode("\n", drush_shell_exec_output()));
 
