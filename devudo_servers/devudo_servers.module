@@ -1,0 +1,72 @@
+<?php
+
+
+// @TODO: make drupal variables
+// RACKSPACE
+define('AUTHURL', 'https://identity.api.rackspacecloud.com/v2.0/');
+define('USERNAME', 'careernerd');
+define('TENANT', 'devudo');
+define('APIKEY', 'e93596076f1a3bd404d6a8b790b8a96b');
+
+/**
+ * Implements hook_menu()
+ */
+ function devudo_servers_menu(){
+   
+  
+ }
+
+/**
+ * Implements hook_form_alter() for server_node_form.
+ */
+function devudo_servers_form_server_node_form_alter(&$form, &$form_state) {
+  drupal_set_message('Ready to create server.');
+  ini_set('include_path', '/usr/share/php-opencloud/lib:'.ini_get('include_path'));
+
+  require_once('rackspace.inc');
+  require_once('compute.inc');
+  require_once('network.inc');
+
+  // establish our credentials
+  $connection = new OpenCloud\Rackspace(AUTHURL,
+    array( 'username' => USERNAME,
+      'tenantName' => TENANT,
+      'apiKey' => APIKEY ));
+
+  // now, connect to the compute service
+  $compute = $connection->Compute('cloudServersOpenStack', 'DFW');
+
+  $options = array();
+
+  // Choose Image
+  $list = $compute->ImageList();
+  while ($image = $list->Next()) {
+    $images[$image->id] = $image;
+    $options['images'][$image->id] = $image->name;
+  }
+  
+  asort($options['images']);
+
+  // STEP 2: Choose Flavor
+  // @TODO: Maintain and filter by DEVUDO supported platforms.
+  $list = $compute->FlavorList();
+  while ($flavor = $list->Next()) {
+    $flavors[$flavor->id] = $flavor;
+    $options['flavors'][$flavor->id] = $flavor->name;
+  }
+
+  $form['image_id'] = array(
+    '#type' => 'radios',
+    '#title' => 'Choose your OS',
+    '#options' => $options['images'],
+  );
+  $form['flavor_id'] = array(
+    '#type' => 'radios',
+    '#title' => 'Choose your OS',
+    '#options' => $options['flavors'],
+  );
+
+}
+
+
+// @TODO: Save the server image and flavor ID to the database.
