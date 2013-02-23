@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * 
+ */
+function devudo_servers_install() {
+  // Create tables.
+  drupal_install_schema('hosting_db_server');
+}
+
+/**
+ * Implements hook_schema
+ */
+function devudo_servers_schema() {
+  $schema['devudo_hosting_server'] = array(
+    'fields' => array(
+      'vid' => array(
+        'type' => 'int', 
+        'unsigned' => TRUE, 
+        'not null' => TRUE, 
+        'default' => 0,
+      ), 
+      'nid' => array(
+        'type' => 'int', 
+        'unsigned' => TRUE, 
+        'not null' => TRUE, 
+        'default' => 0,
+      ),
+    ), 
+    'primary key' => array('vid'),
+  );
+
+
+}
